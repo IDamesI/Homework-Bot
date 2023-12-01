@@ -2,7 +2,7 @@ from balethon import Client
 import re
 import requests
 
-bot = Client("1664217599:hAvPbUuJHOcbG4nGgEHzDruN8eTSgAVII4g1Iips")
+bot = Client("1375820488:1hENm2DGSjHD2vlLHvtJVPVpWgQZmhiUCNP1ZjgF")
 homeworkList = [
     {"course": "شیمی", "desc": "کل فصل 1 و بخش های درس داده شده فصل 2 از کتاب تست"},
     {"course": "ریاضی", "desc": "کل فصل 2 از کتاب تست"},
