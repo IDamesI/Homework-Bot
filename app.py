@@ -1,17 +1,17 @@
 from balethon import Client
 import re
 import requests
+import json
 
 bot = Client("1375820488:1hENm2DGSjHD2vlLHvtJVPVpWgQZmhiUCNP1ZjgF")
-homeworkList = [
-    {"course": "شیمی", "desc": "کل فصل 1 و بخش های درس داده شده فصل 2 از کتاب تست"},
-    {"course": "ریاضی", "desc": "کل فصل 2 از کتاب تست"},
-]
 adminList = ["ilia_soleimani_helli3", "pique", "mhk488"]
 
 
 @bot.on_message()
 async def greet(client, message):
+    with open(f"homework-db.json", "r", encoding="utf-8") as file:
+        homeworkList = json.load(file)
+
     # match message.text:
     # case "/all":
     match = re.match(r"^/all\s+(.*)", message.text)
@@ -107,6 +107,8 @@ async def greet(client, message):
             await message.reply(
                 "این دستور را متوجه نشدم! من تنها دو دستور '/all' و '/help' و '/add'  و '/remove' را متوجه میشوم. لطفا اسم من را اول پیام تگ نکنید و فقط از دستور استفاده کنید 🤝"
             )
+    with open(f"homework-db.json", "w", encoding="utf-8") as f:
+        json.dump(homeworkList, f, ensure_ascii=False, indent=4)
 
 
 bot.run()
