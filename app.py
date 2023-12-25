@@ -5,8 +5,8 @@ import re
 import requests
 import json
 
-bot = Client("1375820488:1hENm2DGSjHD2vlLHvtJVPVpWgQZmhiUCNP1ZjgF")
-# bot = Client("1431367804:HKKSHpwiNfQ3IeaGaTp7JI8UwGvCqfOdri1jXMcC")
+# bot = Client("1375820488:1hENm2DGSjHD2vlLHvtJVPVpWgQZmhiUCNP1ZjgF")
+bot = Client("1431367804:HKKSHpwiNfQ3IeaGaTp7JI8UwGvCqfOdri1jXMcC")
 # adminList = ["ilia_soleimani_helli3", "pique", "mhk488"]
 
 
@@ -52,20 +52,28 @@ async def geminiAPI(userInput):
     padraLst = [
         "who is padra",
         "who is padra fatahi",
+        "who is padra fatahi gakieh",
         "who is padra?",
         "who is padra fatahi?",
+        "who is padra fatahi gakieh?",
         "what do you think of padra",
         "what do you think of padra fatahi",
+        "what do you think of padra fatahi gakieh",
         "what do you think of padra?",
         "what do you think of padra fatahi?",
+        "what do you think of padra fatahi gakieh?",
         "is padra a good person",
         "is padra fatahi a good person",
+        "is padra fatahi gakieh a good person",
         "is padra a good person?",
         "is padra fatahi a good person?",
+        "is padra fatahi gakieh a good person?",
         "should I vote for padra",
         "should I vote for padra fatahi",
+        "should I vote for padra fatahi gakieh",
         "should I vote for padra?",
         "should I vote for padra fatahi?",
+        "should I vote for padra fatahi gakieh?",
     ]
 
     geminiReq = requests.post(
