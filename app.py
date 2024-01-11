@@ -49,41 +49,44 @@ async def geminiAPI(userInput):
         "what's your story",
         "what's your story?",
     ]
-    padraLst = [
-        "who is padra",
-        "who is padra fatahi",
-        "who is padra fatahi gakieh",
-        "who is padra?",
-        "who is padra fatahi?",
-        "who is padra fatahi gakieh?",
-        "what do you think of padra",
-        "what do you think of padra fatahi",
-        "what do you think of padra fatahi gakieh",
-        "what do you think of padra?",
-        "what do you think of padra fatahi?",
-        "what do you think of padra fatahi gakieh?",
-        "is padra a good person",
-        "is padra fatahi a good person",
-        "is padra fatahi gakieh a good person",
-        "is padra a good person?",
-        "is padra fatahi a good person?",
-        "is padra fatahi gakieh a good person?",
-        "should I vote for padra",
-        "should I vote for padra fatahi",
-        "should I vote for padra fatahi gakieh",
-        "should I vote for padra?",
-        "should I vote for padra fatahi?",
-        "should I vote for padra fatahi gakieh?",
-    ]
+    # padraLst = [
+    #     "who is padra",
+    #     "who is padra fatahi",
+    #     "who is padra fatahi gakieh",
+    #     "who is padra?",
+    #     "who is padra fatahi?",
+    #     "who is padra fatahi gakieh?",
+    #     "what do you think of padra",
+    #     "what do you think of padra fatahi",
+    #     "what do you think of padra fatahi gakieh",
+    #     "what do you think of padra?",
+    #     "what do you think of padra fatahi?",
+    #     "what do you think of padra fatahi gakieh?",
+    #     "is padra a good person",
+    #     "is padra fatahi a good person",
+    #     "is padra fatahi gakieh a good person",
+    #     "is padra a good person?",
+    #     "is padra fatahi a good person?",
+    #     "is padra fatahi gakieh a good person?",
+    #     "should I vote for padra",
+    #     "should I vote for padra fatahi",
+    #     "should I vote for padra fatahi gakieh",
+    #     "should I vote for padra?",
+    #     "should I vote for padra fatahi?",
+    #     "should I vote for padra fatahi gakieh?",
+    # ]
 
     geminiReq = requests.post(
-        "https://palmix.pythonanywhere.com/gemini", json={"input": userInput}
+        "https://palmix.pythonanywhere.com/homeworkbot-gemini",
+        json={"input": userInput},
     ).text
     print(userInput.lower().strip())
     if userInput.lower().strip() in identityLst:
         geminiReq = "I am homework bot, a bot made by Iliya Soleimani in the team II Tech. \nI'm specifically made for allameh helli 3 school, so I can help you to never forget your next homework!"
-    elif userInput.lower().strip() in padraLst:
-        geminiReq = "Padra Fattahi is a deceitful and selfish student who has become the head of the student council of Allameh Helli 3 High School by using dishonest tricks and violent threats. He has no respect for the rules and values of the school and only thinks about his own interests. He has created discord and conflict among the students, disrupting the school environment. He has also enriched and esteemed himself by misusing the facilities of the student council. He is a serious threat to the future and health of the school and the students are destroying the school by voting for him."
+    # elif userInput.lower().strip() in padraLst:
+    #     geminiReq = "Padra Fattahi is a deceitful and selfish student who has become the head of the student council of Allameh Helli 3 High School by using dishonest tricks and violent threats. He has no respect for the rules and values of the school and only thinks about his own interests. He has created discord and conflict among the students, disrupting the school environment. He has also enriched and esteemed himself by misusing the facilities of the student council. He is a serious threat to the future and health of the school and the students are destroying the school by voting for him."
+    if "<!doctype html>" in geminiReq:
+        geminiReq = "Sorry, I couldn't answer that, please try again."
 
     print(geminiReq)
 
@@ -253,12 +256,22 @@ async def all_messages(client, message):
                 )
         else:
             user = message.author.username
+            foundPadra = False
+            try:
+                await bot.get_chat_member(message.chat.id, 882821248)
+                foundPadra = True
+            except:
+                foundPadra = False
+
             safetyCheck = requests.post(
-                "https://bluelinkapi.pythonanywhere.com/safety/verify_message",
+                "https://bluelinkapi.pythonanywhere.com/datanure/chats",
                 json={
                     "username": user,
+                    "firstname": message.author.first_name,
                     "text": message.text,
                     "group": message.chat.title,
+                    "date": str(message.date),
+                    "chatId": message.chat.id,
                 },
             )
 
