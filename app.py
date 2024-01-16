@@ -5,8 +5,15 @@ import re
 import requests
 import json
 
-# bot = Client("1375820488:1hENm2DGSjHD2vlLHvtJVPVpWgQZmhiUCNP1ZjgF")
-bot = Client("1431367804:HKKSHpwiNfQ3IeaGaTp7JI8UwGvCqfOdri1jXMcC")
+# homeworkbot
+bot = Client("256476940:IpEpljA2aWSOCbFYSPGgs7sDmS38EOuN5tPqLdE7")
+
+# helli3bot
+# bot = Client("448507974:63cKPi8vQuZotbjCTqiwMYYNCMuLQhKxQddcidkr")
+
+
+# test ii
+# bot = Client("1431367804:HKKSHpwiNfQ3IeaGaTp7JI8UwGvCqfOdri1jXMcC")
 # adminList = ["ilia_soleimani_helli3", "pique", "mhk488"]
 
 
