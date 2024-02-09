@@ -1,0 +1,5 @@
+POST https://bluelinkapi.pythonanywhere.com/homeworkbot-admins
+Content-Type: application/json
+
+{
+}

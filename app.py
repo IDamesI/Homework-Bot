@@ -1,19 +1,21 @@
 from balethon import Client
-from balethon.conditions import private
+from persiantools.jdatetime import JalaliDate
+
+# from balethon.conditions import private
 
 import re
 import requests
 import json
 
 # homeworkbot
-bot = Client("256476940:IpEpljA2aWSOCbFYSPGgs7sDmS38EOuN5tPqLdE7")
+# bot = Client("256476940:IpEpljA2aWSOCbFYSPGgs7sDmS38EOuN5tPqLdE7")
 
 # helli3bot
 # bot = Client("448507974:63cKPi8vQuZotbjCTqiwMYYNCMuLQhKxQddcidkr")
 
 
 # test ii
-# bot = Client("1431367804:HKKSHpwiNfQ3IeaGaTp7JI8UwGvCqfOdri1jXMcC")
+bot = Client("1431367804:dahZnWqj8NrFdKG4EfQy7MIJzaUYOJAifVXLVP1G")
 # adminList = ["ilia_soleimani_helli3", "pique", "mhk488"]
 
 
@@ -113,14 +115,12 @@ async def getAdmins():
 
 
 @bot.on_command()
-async def start(client, message):
-    await message.reply(
-        "سلام، به بات تکالیف علامه حلی 3 خوش آمدید! برای راهنمایی از دستور /help استفاده کنید!"
-    )
+async def start(*, message):
+    await message.reply("سلام، برای دیدن لیستی از تکالیف از دستور /all استفاده بکن!")
 
 
 @bot.on_command()
-async def help(client, message):
+async def help(*, message):
     await message.reply(
         """
 سلام! من ربات مشق های دبیرستان علامه حلی 3 (دوره 2) هستم!
@@ -140,13 +140,13 @@ async def help(client, message):
 اسم درس
 
 خوشبختم که در خدمتت باشم 😉
-🤖 مشق هات رو با @helli3homeworkbot در بله بگیر!
+🤖 مشق هات رو با @hellihomeworkbot در بله بگیر!
             """
     )
 
 
-@bot.on_command()
-async def all(client, message):
+async def all(message):
+    print("all")
     with open(f"homework-db.json", "r", encoding="utf-8") as file:
         homeworkList = json.load(file)
 
@@ -172,58 +172,95 @@ async def all(client, message):
         print("no")
         if len(homeworkList) > 0:
             for homework in homeworkList:
-                messageResponse += f"*{homework['course']}* \n {homework['desc']} \n\n"
+                messageResponse += f"*{homework['course']}* \n {homework['desc']}\n```[...]\nدر {homework['date']} توسط @{homework['author']}``` \n\n"
         else:
             messageResponse = "فعلا مشقی نداریم! \n"
-    messageResponse += "🤖 مشق هات رو با @helli3homeworkbot در بله بگیر!"
-    await message.reply(messageResponse)
+    messageResponse += "🤖 مشق هات رو با @hellihomeworkbot در بله بگیر!"
+    # await message.reply(messageResponse)
+    return messageResponse
 
 
-@bot.on_command()
-async def add(client, message):
+async def add(message):
+    print("hell no")
     with open(f"homework-db.json", "r", encoding="utf-8") as file:
         homeworkList = json.load(file)
 
     user = message.author.username
     adminList = await getAdmins()
     if user not in adminList:
-        await message.reply("شما این دسترسی را ندارید!")
-        return
+        return "شما این دسترسی را ندارید!"
     userInp = message.text.splitlines()
-    homeworkList.append({"course": userInp[1], "desc": userInp[2]})
+    homeworkList.append(
+        {
+            "course": userInp[1],
+            "desc": userInp[2],
+            "date": str(JalaliDate.today()).replace("-", "/"),
+            "author": user,
+        }
+    )
     messageResponse = ""
 
     with open(f"homework-db.json", "w", encoding="utf-8") as f:
         json.dump(homeworkList, f, ensure_ascii=False, indent=4)
 
-    await message.reply("تکلیف مورد نظر ایجاد شد")
+    try:
+        req = requests.post(
+            "http://bluelinkapi.pythonanywhere.com/add_homework",
+            json={"title": userInp[1], "desc": userInp[2]},
+        )
+    except Exception as err:
+        print(err)
+
+    return "تکلیف مورد نظر ایجاد شد"
 
 
-@bot.on_command()
-async def remove(client, message):
+async def remove(message):
+    finalRes = ""
+
     adminList = await getAdmins()
     with open(f"homework-db.json", "r", encoding="utf-8") as file:
         homeworkList = json.load(file)
 
     user = message.author.username
     if user not in adminList:
-        await message.reply("شما این دسترسی را ندارید!")
-        return
+        return "شما این دسترسی را ندارید!"
     userInp = message.text.splitlines()
     found = False
     for homework in homeworkList:
         if homework["course"] == userInp[1]:
             found = True
             homeworkList.remove(homework)
-            await message.reply("تکلیف مورد نظر حذف شد")
+            finalRes = "تکلیف مورد نظر حذف شد"
     if found == False:
-        await message.reply("تکلیف مورد نظر پیدا نشد")
+        return "تکلیف مورد نظر پیدا نشد"
     with open(f"homework-db.json", "w", encoding="utf-8") as f:
         json.dump(homeworkList, f, ensure_ascii=False, indent=4)
 
+    try:
+        req = requests.post(
+            "http://bluelinkapi.pythonanywhere.com/delete_homework",
+            json={"title": userInp[1]},
+        )
+    except Exception as err:
+        print(err)
+    return finalRes
+
 
 @bot.on_message()
-async def all_messages(client, message):
+async def all_messages(*, message):
+    if message.text.startswith("/add"):
+        res = await add(message)
+        print(res)
+        await message.reply(res)
+    if message.text.startswith("/remove"):
+        res = await remove(message)
+        print(res)
+        await message.reply(res)
+    if message.text.startswith("/all"):
+        res = await all(message)
+        await message.reply(res)
+
+    print("wtf!")
     commandLst = ["/all", "/help", "/start", "/add", "/remove"]
     shouldAns = True
     for command in commandLst:
@@ -246,7 +283,7 @@ async def all_messages(client, message):
                     )
 
     if message.chat.type == "group":
-        if message.text.startswith("@helli3homeworkbot"):
+        if message.text.startswith("@hellihomeworkbot"):
             if shouldAns == True:
                 newUserInp = " ".join(message.text.split(" ")[1:])
 
@@ -270,17 +307,20 @@ async def all_messages(client, message):
             except:
                 foundPadra = False
 
-            safetyCheck = requests.post(
-                "https://bluelinkapi.pythonanywhere.com/datanure/chats",
-                json={
-                    "username": user,
-                    "firstname": message.author.first_name,
-                    "text": message.text,
-                    "group": message.chat.title,
-                    "date": str(message.date),
-                    "chatId": message.chat.id,
-                },
-            )
+            try:
+                safetyCheck = requests.post(
+                    "https://bluelinkapi.pythonanywhere.com/datanure/chats",
+                    json={
+                        "username": user,
+                        "firstname": message.author.first_name,
+                        "text": message.text,
+                        "group": message.chat.title,
+                        "date": str(message.date),
+                        "chatId": message.chat.id,
+                    },
+                )
+            except Exception as err:
+                print(err)
 
 
 bot.run()
