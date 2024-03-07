@@ -8,14 +8,14 @@ import requests
 import json
 
 # homeworkbot
-# bot = Client("256476940:IpEpljA2aWSOCbFYSPGgs7sDmS38EOuN5tPqLdE7")
+bot = Client("256476940:IpEpljA2aWSOCbFYSPGgs7sDmS38EOuN5tPqLdE7")
 
 # helli3bot
 # bot = Client("448507974:63cKPi8vQuZotbjCTqiwMYYNCMuLQhKxQddcidkr")
 
 
 # test ii
-bot = Client("1431367804:dahZnWqj8NrFdKG4EfQy7MIJzaUYOJAifVXLVP1G")
+# bot = Client("1431367804:dahZnWqj8NrFdKG4EfQy7MIJzaUYOJAifVXLVP1G")
 # adminList = ["ilia_soleimani_helli3", "pique", "mhk488"]
 
 
@@ -89,15 +89,12 @@ async def geminiAPI(userInput):
         "https://palmix.pythonanywhere.com/homeworkbot-gemini",
         json={"input": userInput},
     ).text
-    print(userInput.lower().strip())
     if userInput.lower().strip() in identityLst:
         geminiReq = "I am homework bot, a bot made by Iliya Soleimani in the team II Tech. \nI'm specifically made for allameh helli 3 school, so I can help you to never forget your next homework!"
     # elif userInput.lower().strip() in padraLst:
     #     geminiReq = "Padra Fattahi is a deceitful and selfish student who has become the head of the student council of Allameh Helli 3 High School by using dishonest tricks and violent threats. He has no respect for the rules and values of the school and only thinks about his own interests. He has created discord and conflict among the students, disrupting the school environment. He has also enriched and esteemed himself by misusing the facilities of the student council. He is a serious threat to the future and health of the school and the students are destroying the school by voting for him."
     if "<!doctype html>" in geminiReq:
         geminiReq = "Sorry, I couldn't answer that, please try again."
-
-    print(geminiReq)
 
     finalText = geminiReq
     if isPersian == True:
@@ -107,11 +104,8 @@ async def geminiAPI(userInput):
     return "hi"
 
 
-async def getAdmins():
-    adminReq = requests.post(
-        "https://bluelinkapi.pythonanywhere.com/homeworkbot-admins"
-    )
-    return json.loads(adminReq.text)
+adminReq = requests.post("https://bluelinkapi.pythonanywhere.com/homeworkbot-admins")
+adminList = json.loads(adminReq.text)
 
 
 @bot.on_command()
@@ -126,19 +120,14 @@ async def help(*, message):
 سلام! من ربات مشق های دبیرستان علامه حلی 3 (دوره 2) هستم!
 برای دیدن مشق های نزدیک از دستور زیر استفاده کن:
 /all
-
+----------
 برای دیدن مشق های یک درس خاص از دستور زیر استفاده کن:
-/all درس
+/all  درس 
+----------
+برای استفاده از هوش مصنوعی کافیه یه پیام بهم بدی
+اگر در گروه میخوای از من استفاده بکنی باید اول از تگ @hellihomeworkbot استفاده بکنی ولی تو خصوصی نیازی نیست!
 
-برای اضافه کردن مشق به لیست تکالیف از دستور زیر استفاده کن (فقط ادمین های ربات مجوز استفاده از این دستور را دارند)
-/add
-اسم درس
-توضیحات تکلیف
-
-برای پاک کردن مشق از لیست از دستور زیر استفاده کن (فقط ادمین های ربات مجوز استفاده از این دستور را دارند)
-/remove
-اسم درس
-
+سازنده: @ilia_soleimani_helli3
 خوشبختم که در خدمتت باشم 😉
 🤖 مشق هات رو با @hellihomeworkbot در بله بگیر!
             """
@@ -146,7 +135,6 @@ async def help(*, message):
 
 
 async def all(message):
-    print("all")
     with open(f"homework-db.json", "r", encoding="utf-8") as file:
         homeworkList = json.load(file)
 
@@ -160,7 +148,6 @@ async def all(message):
         words_after_command = False
     messageResponse = ""
     if words_after_command:
-        print(words_after_command)
         counter = 0
         for homework in homeworkList:
             if homework["course"] == words_after_command:
@@ -169,7 +156,6 @@ async def all(message):
         if counter == 0:
             messageResponse = "فعلا مشقی نداریم! \n"
     else:
-        print("no")
         if len(homeworkList) > 0:
             for homework in homeworkList:
                 messageResponse += f"*{homework['course']}* \n {homework['desc']}\n```[...]\nدر {homework['date']} توسط @{homework['author']}``` \n\n"
@@ -181,12 +167,11 @@ async def all(message):
 
 
 async def add(message):
-    print("hell no")
+    global adminList
     with open(f"homework-db.json", "r", encoding="utf-8") as file:
         homeworkList = json.load(file)
 
     user = message.author.username
-    adminList = await getAdmins()
     if user not in adminList:
         return "شما این دسترسی را ندارید!"
     userInp = message.text.splitlines()
@@ -215,9 +200,9 @@ async def add(message):
 
 
 async def remove(message):
+    global adminList
     finalRes = ""
 
-    adminList = await getAdmins()
     with open(f"homework-db.json", "r", encoding="utf-8") as file:
         homeworkList = json.load(file)
 
@@ -250,18 +235,29 @@ async def remove(message):
 async def all_messages(*, message):
     if message.text.startswith("/add"):
         res = await add(message)
-        print(res)
         await message.reply(res)
     if message.text.startswith("/remove"):
         res = await remove(message)
-        print(res)
         await message.reply(res)
     if message.text.startswith("/all"):
         res = await all(message)
         await message.reply(res)
+    if message.text == "/remind_add":
+        res = await add_remind(message)
+        await message.reply(res)
+    if message.text == "/remind_remove":
+        res = await remove_remind(message)
+        await message.reply(res)
 
-    print("wtf!")
-    commandLst = ["/all", "/help", "/start", "/add", "/remove"]
+    commandLst = [
+        "/all",
+        "/help",
+        "/start",
+        "/add",
+        "/remove",
+        "/remind_add",
+        "/remind_remove",
+    ]
     shouldAns = True
     for command in commandLst:
         if command in message.text:
@@ -276,7 +272,11 @@ async def all_messages(*, message):
             else:
                 ans = await geminiAPI(message.text)
                 if ans != None and ans != "":
-                    await message.reply(ans)
+                    ans = ans.replace("**", "*")
+                    await message.reply(
+                        "*🤖 متن زیر توسط هوش مصنوعی نوشته شده و نشان دهنده واقعیت، یا نظرات سازنده های بازو نیست:*\n\n"
+                        + ans
+                    )
                 else:
                     await message.reply(
                         "نتونستم جواب اینو بدم، لطفا یه چیز دیگه امتحان کن"
@@ -289,7 +289,11 @@ async def all_messages(*, message):
 
                 ans = await geminiAPI(newUserInp)
                 if ans != None and ans != "":
-                    await message.reply(ans)
+                    ans = ans.replace("**", "*")
+                    await message.reply(
+                        "*🤖 متن زیر توسط هوش مصنوعی نوشته شده و نشان دهنده واقعیت، یا نظرات سازنده های بازو نیست:*\n\n"
+                        + ans
+                    )
                 else:
                     await message.reply(
                         "نتونستم جواب اینو بدم، لطفا یه چیز دیگه امتحان کن"
@@ -321,6 +325,29 @@ async def all_messages(*, message):
                 )
             except Exception as err:
                 print(err)
+
+
+@bot.on_command()
+async def add_remind(message):
+    chatFile = open(f"./chatids.json", encoding="utf-8").read()
+    chatIds = json.loads(chatFile)
+    chatIds.append(str(message.chat.id))
+    with open(f"./chatids.json", "w", encoding="utf-8") as f:
+        json.dump(chatIds, f, ensure_ascii=False, indent=4)
+
+    return "شما با موفقیت به لیست یادآوری روزانه تکالیف اضافه شدید. از الان به بعد در این چت ساعت 5 هر روز به شما تکالیف پیش رو یادآوری خواهد شد 😃"
+
+
+@bot.on_command()
+async def remove_remind(message):
+    chatFile = open(f"./chatids.json", encoding="utf-8").read()
+    chatIds = json.loads(chatFile)
+    chatIds.remove(str(message.chat.id))
+
+    with open(f"./chatids.json", "w", encoding="utf-8") as f:
+        json.dump(chatIds, f, ensure_ascii=False, indent=4)
+
+    return "شما با موفقیت از لیست یادآوری روزانه تکالیف حذف شدید ☹️"
 
 
 bot.run()
