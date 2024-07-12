@@ -42,7 +42,7 @@ def schedule_reminder():
     now = datetime.datetime.utcnow()
 
     # Calculate desired schedule time in Tehran time (3:00 PM)
-    desired_time = datetime.datetime(now.year, now.month, now.day, 15, 00)  # 3:00 PM
+    desired_time = datetime.datetime(now.year, now.month, now.day, 17, 00)  # 3:00 PM
 
     # Adjust the schedule time based on Tehran time offset
     if desired_time < now:

@@ -3,30 +3,35 @@
         "course": "ترمودینامیک",
         "desc": "فصل ۵ کتاب تست تا سوال ۴۰ همش به علاوه جزوش تا ته فرایند هم فشار",
         "date": "1402-11-20",
-        "author": "ilia_soleimani_helli3"
+        "author": "ilia_soleimani_helli3",
+        "class": "201"
     },
     {
         "course": "ریاضی",
         "desc": "سوالات نشر الگو 1830 تا 1882 زوج ها",
         "date": "1402-11-20",
-        "author": "ilia_soleimani_helli3"
+        "author": "ilia_soleimani_helli3",
+        "class": "201"
     },
     {
         "course": "شیمی",
         "desc": "ده تا سوال حفظی از فصل دو با جواب بنویسید",
         "date": "1402-11-20",
-        "author": "ilia_soleimani_helli3"
+        "author": "ilia_soleimani_helli3",
+        "class": "201"
     },
     {
         "course": "هندسه",
         "desc": "تست های فرد فصل سوم درس ۱",
         "date": "1402-11-20",
-        "author": "ilia_soleimani_helli3"
+        "author": "ilia_soleimani_helli3",
+        "class": "201"
     },
     {
         "course": "فیزیک",
         "desc": "نردبام ۶۷ تا ۹۵ و ۱۱۷ تا ۱۳۷ فرد ها (فصل ۴)",
         "date": "1402-11-20",
-        "author": "ilia_soleimani_helli3"
+        "author": "ilia_soleimani_helli3",
+        "class": "201"
     }
 ]
