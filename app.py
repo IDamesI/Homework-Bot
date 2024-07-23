@@ -1,3 +1,5 @@
+import os
+
 from balethon import Client
 from balethon.objects import InlineKeyboard
 from persiantools.jdatetime import JalaliDate
@@ -112,6 +114,14 @@ async def all(message):
     messageResponse += "\n\n"
     messageResponse += "🤖 مشق هات رو با @hellihomeworkbot در بله بگیر!"
     # await message.reply(messageResponse)
+
+    analytics = json.loads(open("analytics.json", "r", encoding="utf-8").read())
+    if str(JalaliDate.today()) not in analytics:
+        analytics[str(JalaliDate.today())] = 0
+    analytics[str(JalaliDate.today())] += 1
+    with open("analytics.json", "w", encoding="utf-8") as file:
+        json.dump(analytics, file, ensure_ascii=False, indent=4)
+
     await message.reply(messageResponse)
 
 
@@ -244,6 +254,49 @@ async def all_messages(*, message):
         )
     if message.text.startswith("/backup"):
         await send_backup(message)
+    if message.text.startswith("/write_file"):
+        await write_file(message)
+    if message.text.startswith("/read_file"):
+        await read_file(message)
+    if message.text == "/help_master":
+        await message.reply(
+            """*Master Commands:*
+
+/add
+add
+coursename
+coursedesc
+
+/remove
+remove
+coursename
+
+/all
+all coursename
+
+/settings
+settings
+
+/admin_add
+admin_add userid username( without @ ) class
+
+/admin_remove
+admin_remove userid username( without @ ) class
+
+/help_admin
+help_admin
+
+/backup
+backup
+
+/write_file
+write_file filename filedata
+
+/read_file
+read_file filename"""
+        )
+    if message.text.startswith("/ls"):
+        await ls(message)
 
 
 @bot.on_callback_query()
@@ -368,6 +421,58 @@ async def send_backup(message):
     await bot.send_document(message.chat.id, "chatids.json", "chatids.json")
     await bot.send_document(message.chat.id, "classes.json", "classes.json")
     await bot.send_document(message.chat.id, "homework-db.json", "homework-db.json")
+
+
+async def write_file(message):
+    userid = message.author.id
+    if str(userid) != "1215365851":
+        await message.reply("شما دسترسی استفاده از این کامند را ندارید!")
+        return
+
+    fileName = message.text.split(" ")[1].strip()
+    fileContent = " ".join(message.text.split(" ")[2:])
+
+    if os.path.exists(fileName):
+        fileData = open(fileName, "r", encoding="utf-8").read()
+        await message.reply(f"*Prev:* \n{fileData} \n\n\n\n *New:* \n{fileContent}")
+        with open(fileName, "w", encoding="utf-8") as f:
+            f.write(fileContent)
+        return
+    await message.reply("File doesn't exist")
+    return
+
+
+async def read_file(message):
+    userid = message.author.id
+    if str(userid) != "1215365851":
+        await message.reply("شما دسترسی استفاده از این کامند را ندارید!")
+        return
+
+    fileName = message.text.split(" ")[1].strip()
+
+    if os.path.exists(fileName):
+        fileData = open(fileName, "r", encoding="utf-8").read()
+        await message.reply(f"*{fileName}:* \n{fileData}")
+        return
+    await message.reply("File doesn't exist")
+    return
+
+
+async def ls(message):
+    userid = message.author.id
+    if str(userid) != "1215365851":
+        await message.reply("شما دسترسی استفاده از این کامند را ندارید!")
+        return
+
+    files = os.listdir()
+    file_list = []
+    for file in files:
+        if os.path.isdir(file):
+            file_list.append(f"{file}\t")
+        else:
+            file_list.append(file)
+
+    await message.reply("\n".join(file_list))
 
 
 bot.run()
