@@ -56,7 +56,14 @@ async def all(message):
         await message.reply(
             "شما کلاس خود را انتخاب نکرده اید، لطفا کلاس خود را انتخاب کنید:",
             InlineKeyboard(
-                [("۲/۱", "201")], [("۲/۲", "202")], [("۲/۳", "203")], [("۲/۴", "204")]
+                [("۱۰۱", "101")],
+                [("۱۰۲", "102")],
+                [("۱۰۳", "103")],
+                [("۱۰۴", "104")],
+                [("۲۰۱", "201")],
+                [("۲۰۲", "202")],
+                [("۲۰۳", "203")],
+                [("۲۰۴", "204")],
             ),
         )
         return
@@ -114,7 +121,14 @@ async def add(message):
         await message.reply(
             "شما کلاس خود را انتخاب نکرده اید، لطفا کلاس خود را انتخاب کنید:",
             InlineKeyboard(
-                [("۲/۱", "201")], [("۲/۲", "202")], [("۲/۳", "203")], [("۲/۴", "204")]
+                [("۱۰۱", "101")],
+                [("۱۰۲", "102")],
+                [("۱۰۳", "103")],
+                [("۱۰۴", "104")],
+                [("۲۰۱", "201")],
+                [("۲۰۲", "202")],
+                [("۲۰۳", "203")],
+                [("۲۰۴", "204")],
             ),
         )
         return
@@ -151,7 +165,14 @@ async def remove(message):
         await message.reply(
             "شما کلاس خود را انتخاب نکرده اید، لطفا کلاس خود را انتخاب کنید:",
             InlineKeyboard(
-                [("۲/۱", "201")], [("۲/۲", "202")], [("۲/۳", "203")], [("۲/۴", "204")]
+                [("۱۰۱", "101")],
+                [("۱۰۲", "102")],
+                [("۱۰۳", "103")],
+                [("۱۰۴", "104")],
+                [("۲۰۱", "201")],
+                [("۲۰۲", "202")],
+                [("۲۰۳", "203")],
+                [("۲۰۴", "204")],
             ),
         )
         return
@@ -202,8 +223,10 @@ async def all_messages(*, message):
         await all(message)
     if message.text == "/settings":
         await settings(message)
-    if message.text.startswith("/admin"):
-        await admin(message)
+    if message.text.startswith("/admin_add"):
+        await add_admin(message)
+    if message.text.startswith("/admin_remove"):
+        await remove_admin(message)
     if message.text == "/help_admin":
         await message.reply(
             """*راهنمای ادمین ها*
@@ -219,16 +242,13 @@ async def all_messages(*, message):
 /remove
 ریاضی"""
         )
+    if message.text.startswith("/backup"):
+        await send_backup(message)
 
 
 @bot.on_callback_query()
 async def answer_callback_query(callback_query):
-    if (
-        callback_query.data == "201"
-        or callback_query.data == "202"
-        or callback_query.data == "203"
-        or callback_query.data == "204"
-    ):
+    if callback_query.data in ["101", "102", "103", "104", "201", "202", "203", "204"]:
         classFile = open("./classes.json", "r", encoding="utf-8").read()
         classDb = json.loads(classFile)
 
@@ -240,7 +260,14 @@ async def answer_callback_query(callback_query):
         await callback_query.message.reply(
             "کلاس خود را انتخاب کنید",
             InlineKeyboard(
-                [("۲/۱", "201")], [("۲/۲", "202")], [("۲/۳", "203")], [("۲/۴", "204")]
+                [("۱۰۱", "101")],
+                [("۱۰۲", "102")],
+                [("۱۰۳", "103")],
+                [("۱۰۴", "104")],
+                [("۲۰۱", "201")],
+                [("۲۰۲", "202")],
+                [("۲۰۳", "203")],
+                [("۲۰۴", "204")],
             ),
         )
     elif callback_query.data == "settings_remind":
@@ -279,7 +306,7 @@ async def remove_remind(message):
     return "شما با موفقیت از لیست یادآوری روزانه تکالیف حذف شدید ☹️"
 
 
-async def admin(message):
+async def add_admin(message):
     if len(message.text.split(" ")) != 4:
         await message.reply(
             "اشتباه است، باید اینطوری باشد \n /admin userid username( without @ ) class"
@@ -303,6 +330,44 @@ async def admin(message):
     with open("./admins-class.json", "w", encoding="utf-8") as f:
         json.dump(adminDic, f, ensure_ascii=False, indent=4)
     await message.reply("دستور با موفقیت انجام شد")
+
+
+async def remove_admin(message):
+    if len(message.text.split(" ")) != 4:
+        await message.reply(
+            "اشتباه است، باید اینطوری باشد \n /admin userid username( without @ ) class"
+        )
+        return
+    userid = message.author.id
+    newid = message.text.split(" ")[1].strip()
+    newusername = message.text.split(" ")[2].strip()
+    newidclass = message.text.split(" ")[3].strip()
+    if str(userid) != "1215365851":
+        await message.reply("شما دسترسی استفاده از این کامند را ندارید!")
+        return
+
+    if newid in adminList:
+        adminList.remove(newid)
+    if newusername in adminDic[str(newidclass)]:
+        adminDic[str(newidclass)].remove(newusername)
+    with open("./admins.json", "w", encoding="utf-8") as f:
+        json.dump(adminList, f, ensure_ascii=False, indent=4)
+
+    with open("./admins-class.json", "w", encoding="utf-8") as f:
+        json.dump(adminDic, f, ensure_ascii=False, indent=4)
+    await message.reply("دستور با موفقیت انجام شد")
+
+
+async def send_backup(message):
+    userid = message.author.id
+    if str(userid) != "1215365851":
+        await message.reply("شما دسترسی استفاده از این کامند را ندارید!")
+        return
+    await bot.send_document(message.chat.id, "admins-class.json", "admins-class.json")
+    await bot.send_document(message.chat.id, "admins.json", "admins.json")
+    await bot.send_document(message.chat.id, "chatids.json", "chatids.json")
+    await bot.send_document(message.chat.id, "classes.json", "classes.json")
+    await bot.send_document(message.chat.id, "homework-db.json", "homework-db.json")
 
 
 bot.run()
