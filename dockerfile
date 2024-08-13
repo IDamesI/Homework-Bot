@@ -8,4 +8,4 @@ RUN pip install --trusted-host mirrors.aliyun.com -i http://mirrors.aliyun.com/p
 
 COPY . .
 
-CMD [ "python", "./app.py"]
+CMD sh -c "python ./homework-app.py & python ./backup-app.py"

@@ -10,6 +10,9 @@ import re
 import requests
 import json
 
+import asyncio
+import subprocess
+
 # homeworkbot
 bot = Client("256476940:IpEpljA2aWSOCbFYSPGgs7sDmS38EOuN5tPqLdE7")
 
@@ -293,7 +296,10 @@ backup
 write_file filename filedata
 
 /read_file
-read_file filename"""
+read_file filename
+
+/ls
+ls"""
         )
     if message.text.startswith("/ls"):
         await ls(message)
